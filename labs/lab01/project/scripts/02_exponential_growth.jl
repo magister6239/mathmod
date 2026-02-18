@@ -10,6 +10,8 @@ using DrWatson
 using DifferentialEquations
 using DataFrames
 using Plots
+gr(size=(800,600), fmt=:png)
+default(show=false)
 using JLD2
 using BenchmarkTools
 
@@ -269,12 +271,10 @@ println("\n" * "="^60)
 println("ЛАБОРАТОРНАЯ РАБОТА ЗАВЕРШЕНА")
 println("="^60)
 println("\nРезультаты сохранены в:")
-println(" - data/${script_name}/single/ - базовый эксперимент")
-println(" - data/${script_name}/parametric_scan/ - параметрическое сканирование")
-println(" - data/${script_name}/all_results.jld2 - сводные данные")
-println(" - plots/${script_name}/ - все графики")
-println(" - data/${script_name}/all_plots.jld2 - объекты графиков")
-println("\nДля анализа результатов используйте:")
-println(" using JLD2, DataFrames")
-println(" @load \"data/${script_name}/all_results.jld2\"")
+println(" - data/$(script_name)/single/ - базовый эксперимент")
+println(" - data/$(script_name)/parametric_scan/ - параметрическое сканирование")
+println(" - data/$(script_name)/all_results.jld2 - сводные данные")
+println(" - plots/$(script_name)/ - все графики")
+println(" - data/$(script_name)/all_plots.jld2 - объекты графиков")
+println(" @load \"data/$(script_name)/all_results.jld2\"")
 println(" println(results_df)")
