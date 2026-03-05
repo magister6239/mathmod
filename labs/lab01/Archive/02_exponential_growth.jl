@@ -10,7 +10,7 @@ using DrWatson
 using DifferentialEquations
 using DataFrames
 using Plots
-gr(format=:png)
+gr(size=(800,600), fmt=:png)
 default(show=false)
 using JLD2
 using BenchmarkTools
