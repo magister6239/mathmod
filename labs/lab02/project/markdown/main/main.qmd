@@ -1,0 +1,68 @@
+```{julia}
+using DrWatson
+@quickactivate "project"
+using DifferentialEquations, Plots, DataFrames
+gr(format=:png)
+
+k = 9.9
+n = 4.1
+a = sqrt(n^2 - 1)
+
+phi = pi/4
+
+r1 = k / (n + 1)
+theta1 = 0.0
+
+function spiral!(dr, r, p, theta)
+    dr[1] = r[1] / a
+end
+
+prob1 = ODEProblem(spiral!, [r1], (theta1, phi))
+sol1 = solve(prob1)
+
+r_meet1 = sol1.u[end][1]
+theta_meet1 = sol1.t[end]
+
+println("Случай 1: r0 = $r1, точка встречи: r = $r_meet1, theta = $theta_meet1")
+
+r2 = k / (n - 1)
+theta2 = pi
+
+prob2 = ODEProblem(spiral!, [r2], (theta2, phi))
+sol2 = solve(prob2)
+
+r_meet2 = sol2.u[end][1]
+theta_meet2 = sol2.t[end]
+println("Случай 2: r0 = $r2, точка встречи: r = $r_meet2, theta = $theta_meet2")
+
+pol2cart(r, theta) = (r * cos(theta), r * sin(theta))
+
+x1 = [pol2cart(sol1.u[i][1], sol1.t[i])[1] for i in 1:length(sol1.t)]
+y1 = [pol2cart(sol1.u[i][1], sol1.t[i])[2] for i in 1:length(sol1.t)]
+
+x2 = [pol2cart(sol2.u[i][1], sol2.t[i])[1] for i in 1:length(sol2.t)]
+y2 = [pol2cart(sol2.u[i][1], sol2.t[i])[2] for i in 1:length(sol2.t)]
+
+t_boat = range(0, max(r_meet1, r_meet2)*1.2, length=100)
+x_boat = t_boat .* cos(phi)
+y_boat = t_boat .* sin(phi)
+
+x_meet1, y_meet1 = pol2cart(r_meet1, phi)
+x_meet2, y_meet2 = pol2cart(r_meet2, phi)
+
+plt = plot(title="Задача преследования (вариант 20)", xlabel="x, км", ylabel="y, км", aspect_ratio=:equal)
+plot!(plt, x1, y1, label="Катер (случай 1)", lw=2)
+plot!(plt, x2, y2, label="Катер (случай 2)", lw=2)
+plot!(plt, x_boat, y_boat, label="Лодка (φ = 45°)", ls=:dash, lw=2)
+scatter!(plt, [x_meet1], [y_meet1], label="Встреча (1)", ms=8)
+scatter!(plt, [x_meet2], [y_meet2], label="Встреча (2)", ms=8)
+scatter!(plt, [r1*cos(theta1)], [r1*sin(theta1)], label="Старт катера (1)", m=:square)
+scatter!(plt, [r2*cos(theta2)], [r2*sin(theta2)], label="Старт катера (2)", m=:square)
+
+savefig(plotsdir("chase.png"))
+display(plt)
+
+println("\nТочка встречи для случая 1: ($(round(x_meet1, digits=3)), $(round(y_meet1, digits=3))) км")
+println("Точка встречи для случая 2: ($(round(x_meet2, digits=3)), $(round(y_meet2, digits=3))) км")
+```
+
