@@ -1,6 +1,7 @@
 using DrWatson
 @quickactivate "project"
 using DifferentialEquations, Plots
+gr(format=:png)
 
 x0 = 27300.0
 y0 = 20400.0
