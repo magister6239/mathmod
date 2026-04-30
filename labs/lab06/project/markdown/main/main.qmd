@@ -1,0 +1,57 @@
+```{julia}
+using DrWatson
+@quickactivate "project"
+using DifferentialEquations, Plots
+
+
+N = 10700
+S0 = 10529
+I0 = 121
+R0 = 50
+a = 0.01
+B = 0.02
+
+function sir_threshold!(du, u, p, t)
+    S, I, R = u
+    Istar = p[1]
+    if I ≤ Istar
+        du[1] = 0.0
+        du[2] = -B * I
+    else
+        du[1] = -a * S
+        du[2] = a * S - B * I
+    end
+    du[3] = B * I
+end
+
+tspan = (0.0, 200.0)
+
+Istar1 = 200.0
+p1 = [Istar1]
+prob1 = ODEProblem(sir_threshold!, [S0, I0, R0], tspan, p1)
+sol1 = solve(prob1, saveat=0.1)
+
+Istar2 = 100.0
+p2 = [Istar2]
+prob2 = ODEProblem(sir_threshold!, [S0, I0, R0], tspan, p2)
+sol2 = solve(prob2, saveat=0.1)
+
+plt1 = plot(sol1, vars=(0,1), label="S(t)", xlabel="Время", ylabel="Численность")
+plot!(plt1, sol1, vars=(0,2), label="I(t)")
+plot!(plt1, sol1, vars=(0,3), label="R(t)")
+title!("Случай 1: I* = 200 (I(0) ≤ I*)")
+savefig(plotsdir("epi_case1.png"))
+
+plt2 = plot(sol2, vars=(0,1), label="S(t)", xlabel="Время", ylabel="Численность")
+plot!(plt2, sol2, vars=(0,2), label="I(t)")
+plot!(plt2, sol2, vars=(0,3), label="R(t)")
+title!("Случай 2: I* = 100 (I(0) > I*)")
+
+savefig(plotsdir("epi_case2.png"))
+display(plt1)
+display(plt2)
+
+println("Случай 1: S(200)=$(round(sol1[end][1])), I(200)=$(round(sol1[end][2])), R(200)=$(round(sol1[end][3]))")
+println("Случай 2: S(200)=$(round(sol2[end][1])), I(200)=$(round(sol2[end][2])), R(200)=$(round(sol2[end][3]))")
+```
+
